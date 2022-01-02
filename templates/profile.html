@@ -2,11 +2,11 @@
 
 {% block content %}
 
-<a class="position-fixed top-0 end-0 m-2 btn btn-info" href="{{url_for('logout')}}">Logout</a>
 <div class='container'>
     <div class="d-flex align-items-center">
         <div class="img-container">
-            <img src="{{url_for('static', filename='images/' + user.image)}}" alt="user image" width="200">
+            <img src="{{url_for('static', filename='images/' + user.image)}}" class="rounded" alt="user image"
+                width="200">
         </div>
         <div class="data-container ms-3">
             <div>

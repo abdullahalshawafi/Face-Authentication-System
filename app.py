@@ -1,14 +1,12 @@
 import sqlite3
 from sqlite3 import Error
 from flask import Flask, render_template, request, redirect, session
-# from flask_session import Session
 
 app = Flask(__name__)
 app.secret_key = 'secret key'
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
-# Session(app)
 
 DATABASE = 'database.db'
 
@@ -62,11 +60,15 @@ def logout():
 
 @app.route('/profile')
 def profile():
+    if not session["user"]:
+        return redirect('login')
     return render_template('profile.html', title="Profile", user=session["user"])
 
 
 @app.route('/edit-profile')
 def edit_profile():
+    if not session["user"]:
+        return redirect('login')
     return render_template('profile.html', title="Profile", user=session["user"])
 
 
