@@ -1,0 +1,23 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<a class="position-fixed top-0 end-0 m-2 btn btn-info" href="{{url_for('logout')}}">Logout</a>
+<div class='container'>
+    <div class="d-flex align-items-center">
+        <div class="img-container">
+            <img src="{{url_for('static', filename='images/' + user.image)}}" alt="user image" width="200">
+        </div>
+        <div class="data-container ms-3">
+            <div>
+                <p>Name: {{ user.name }}</p>
+                <p>Email: {{ user.email }}</p>
+            </div>
+            <div>
+                <a class="btn btn-warning" href="{{url_for('edit_profile')}}">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

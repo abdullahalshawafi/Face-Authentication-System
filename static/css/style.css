@@ -1,0 +1,21 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    background-color: #303030;
+}
+
+.container {
+    margin-top: 4rem;
+    color: #ffffff;
+}
+
+.container form {
+    width: 40%;
+    min-width: 15rem;
+    margin: auto;
+}
