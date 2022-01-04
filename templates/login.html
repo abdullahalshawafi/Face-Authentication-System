@@ -3,20 +3,34 @@
 {% block content %}
 
 <div class='container'>
-    <form action="{{url_for('login')}}" method="post">
+    <form class="login-form" action="{{url_for('login')}}" method="post">
         <div class="mb-3 text-center">
             <h1>Login</h1>
         </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email address</label>
-            <input type="email" name="email" class="form-control" id="email">
+        <div class="mode-choice">
+            <button type="button" id="normal" class="btn btn-primary w-100 my-3">Login with email & password</button>
+            <button type="button" id="face" class="btn btn-danger w-100">Login with your face</button>
         </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" id="password" autocomplete>
+        <div class="normal-mode">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" name="email" class="form-control" id="email">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" id="password" autocomplete>
+            </div>
+            <button type="submit" class="btn btn-danger d-inline-block w-100">Login</button>
+            <a href="{{url_for('login')}}" class="d-block mt-2 text-white">Go back</a>
         </div>
-        <button type="submit" class="btn btn-danger d-inline-block w-100">Login</button>
+        <div class="face-mode">
+            <button type="button" id="camera" class="btn btn-light d-block my-3 mx-auto">Open camera</button>
+            <div class="camera-stream"></div>
+            <a href="{{url_for('login')}}" class="d-block mt-2 text-white">Go back</a>
+        </div>
     </form>
 </div>
+
+<script src="{{url_for('static', filename='js/login.js')}}"></script>
 
 {% endblock %}

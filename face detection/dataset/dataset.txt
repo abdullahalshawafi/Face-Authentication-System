@@ -1,9 +1,0 @@
-#You can find the datasets here 
-
-#Face1 data : https://www.dropbox.com/s/ubjjoo0b2wz4vgz/faces_aligned_small_mirrored_co_aligned_cropped_cleaned.tar.gz?dl=1
-
-#Face2 data : https://www.kaggle.com/gasgallo/faces-data-new
-
-#BackGround1 : (iccv09) https://www.kaggle.com/balraj98/stanford-background-dataset
-
-#BackGround2 : (BG-20K) https://drive.google.com/drive/folders/1ZBaMJxZtUNHIuGj8D8v3B9Adn8dbHwSS

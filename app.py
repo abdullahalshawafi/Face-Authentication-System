@@ -1,13 +1,15 @@
+import cv2
 import sqlite3
-from sqlite3 import Error
-from flask import Flask, render_template, request, redirect, session
 import skimage.io as io
-import sys
-sys.path.append("./cartonize") 
-from cartonize import cartoonize
+from sqlite3 import Error
+from cartonize.cartonize import cartoonize
+from face_detection.face_detection import face_detection
+from flask import Flask, render_template, request, redirect, session, Response
 
 app = Flask(__name__)
-app.secret_key = "secret key"
+app.name = "BRAW"
+app.static_folder = 'static'
+app.secret_key = "65fa34c77b83f7114eea7b5c"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
@@ -26,11 +28,31 @@ def get_db_connection():
     return conn
 
 
+def generate_frames(camera):
+    while True:
+        success, frame = camera.read()
+        if not success:
+            break
+        else:
+            frame = face_detection(camera)
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+
+        yield(b'--frame\r\n'
+              b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
 @app.route("/")
 def home():
     if not session["user"]:
         return redirect("login")
-    return render_template("profile.html", title="Profile", user=session["user"])
+    return redirect("profile")
+
+
+@app.route('/video')
+def video():
+    camera = cv2.VideoCapture(0)
+    return Response(generate_frames(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -42,7 +64,8 @@ def login():
 
         cur = get_db_connection().cursor()
         cur.execute(
-            "SELECT * FROM users WHERE email = ? AND password = ?", (email, password)
+            "SELECT * FROM users WHERE email = ? AND password = ?", (email,
+                                                                     password)
         )
         user = cur.fetchone()
 
@@ -77,7 +100,7 @@ def profile():
 def edit_profile():
     if not session["user"]:
         return redirect("login")
-    return render_template("profile.html", title="Profile", user=session["user"])
+    return redirect("profile")
 
 
 @app.route("/cartonize", methods=["GET", "POST"])
@@ -89,7 +112,8 @@ def cartonize():
             )
             cartonizedImage = cartoonize(originalImage)
             io.imsave(
-                "./static/images/cartonized_" + str(session["user"].get("image")),
+                "./static/images/cartonized_" +
+                str(session["user"].get("image")),
                 cartonizedImage,
             )
             connection = get_db_connection()
@@ -129,10 +153,10 @@ def cartonize():
                 }
             except Error as e:
                 print(e.message)
-        return redirect("profile")
-    if not session["user"]:
+
+    elif not session["user"]:
         return redirect("login")
-    return render_template("profile.html", title="Profile", user=session["user"])
+    return redirect("profile")
 
 
 if __name__ == "__main__":

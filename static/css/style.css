@@ -14,8 +14,18 @@ body {
     color: #ffffff;
 }
 
-.container form {
-    width: 40%;
+.login-form {
+    width: 30%;
     min-width: 15rem;
     margin: auto;
+}
+
+.login-form .mode-choice {
+    margin: auto;
+    width: 75%;
+}
+
+.login-form .normal-mode,
+.login-form .face-mode {
+    display: none;
 }

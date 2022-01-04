@@ -3,23 +3,21 @@
 {% block content %}
 
 <div class='container'>
-    <div class="d-flex align-items-center">
+    <div class="d-flex flex-column align-items-center justify-content-center">
         <div class="img-container">
             <img src="{{url_for('static', filename='images/' + user.image)}}" class="rounded" alt="user image"
                 width="200">
         </div>
-        <div class="data-container ms-3">
+        <div class="data-container mt-3 text-center">
             <div>
-                <p>Name: {{ user.name }}</p>
-                <p>Email: {{ user.email }}</p>
+                <p class="mb-1">{{ user.name }}</p>
+                <p class="mb-1">{{ user.email }}</p>
             </div>
             <div>
-                <a class="btn btn-warning" href="{{url_for('edit_profile')}}">Edit Profile</a>
-                <form action="{{url_for('cartonize')}}" method="post">
-                    <input type="submit" class="btn btn-warning" name="Cartonize Profile Pic" value="Cartonize Profile Pic">
+                <form class="m-0 my-2" action="{{url_for('cartonize')}}" method="post">
+                    <input type="submit" class="btn btn-success w-100" value="Cartonize Profile Picture">
                 </form>
-                   
-                
+                <!-- <a class="btn btn-warning w-100" href="{{url_for('edit_profile')}}">Edit Profile</a> -->
             </div>
         </div>
     </div>
