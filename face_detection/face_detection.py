@@ -1,10 +1,11 @@
 from .classifier import *
 from .features import *
 
+import os
 import cv2
 import pickle
 
-model = pickle.load(open("model.pkl", 'rb'))
+model = pickle.load(open(f"{os.getcwd()}/face_detection/model.pkl", 'rb'))
 
 
 def detect(img, model):
