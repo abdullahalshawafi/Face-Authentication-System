@@ -2,9 +2,11 @@ import cv2
 import sqlite3
 import skimage.io as io
 from sqlite3 import Error
+from face_detection.classifier import *
+from face_detection.face_detection import *
 from cartonize.cartonize import cartoonize
-from face_detection.face_detection import face_detection
 from flask import Flask, render_template, request, redirect, session, Response
+
 
 app = Flask(__name__)
 app.name = "BRAW"
@@ -29,12 +31,15 @@ def get_db_connection():
 
 
 def generate_frames(camera):
+    faces = []
+    d = 2
+
     while True:
         success, frame = camera.read()
         if not success:
             break
         else:
-            frame = face_detection(camera)
+            faces, d, frame = face_detection(faces, d, camera)
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
 
