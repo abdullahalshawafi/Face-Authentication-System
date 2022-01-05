@@ -10,7 +10,7 @@ from flask import Flask, render_template, request, redirect, session, Response
 
 app = Flask(__name__)
 app.name = "BRAW"
-app.static_folder = 'static'
+app.static_folder = "static"
 app.secret_key = "65fa34c77b83f7114eea7b5c"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -40,24 +40,27 @@ def generate_frames(camera):
             break
         else:
             faces, d, frame = face_detection(faces, d, camera)
-            ret, buffer = cv2.imencode('.jpg', frame)
+            ret, buffer = cv2.imencode(".jpg", frame)
             frame = buffer.tobytes()
 
-        yield(b'--frame\r\n'
-              b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        yield (b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
 
 
 @app.route("/")
 def home():
-    if not session["user"]:
+    try:
+        if session["user"]:
+            return redirect("profile")
+    except:
         return redirect("login")
-    return redirect("profile")
 
 
-@app.route('/video')
+@app.route("/video")
 def video():
     camera = cv2.VideoCapture(0)
-    return Response(generate_frames(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(
+        generate_frames(camera), mimetype="multipart/x-mixed-replace; boundary=frame"
+    )
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -69,8 +72,7 @@ def login():
 
         cur = get_db_connection().cursor()
         cur.execute(
-            "SELECT * FROM users WHERE email = ? AND password = ?", (email,
-                                                                     password)
+            "SELECT * FROM users WHERE email = ? AND password = ?", (email, password)
         )
         user = cur.fetchone()
 
@@ -115,10 +117,10 @@ def cartonize():
             originalImage = io.imread(
                 "./static/images/" + str(session["user"].get("image"))
             )
-            cartonizedImage = cartoonize(originalImage)
+            print(originalImage[:,:,0:3].shape)
+            cartonizedImage = cartoonize(originalImage[:,:,0:3])
             io.imsave(
-                "./static/images/cartonized_" +
-                str(session["user"].get("image")),
+                "./static/images/cartonized_" + str(session["user"].get("image")),
                 cartonizedImage,
             )
             connection = get_db_connection()
