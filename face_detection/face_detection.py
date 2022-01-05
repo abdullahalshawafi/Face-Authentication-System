@@ -1,5 +1,6 @@
 from .classifier import *
 from .features import *
+from .recognition import *
 
 import os
 import cv2
@@ -46,7 +47,7 @@ def detect(img, model):
 
                     for m in model:
                         prop, s_h, s_a = m.isFace(window, s_h, s_a)
-                        if (prop < 1.23):
+                        if (prop < 1.21):
                             isf = 0
                             break
 
@@ -82,12 +83,20 @@ def detect(img, model):
     return faces
 
 
-def face_detection(faces, d, cap):
+# d = 2
+# q = 0
+# o = 2
+
+
+def face_detection(faces, cap, d, q, o):
+    user = None
     ret, frame = cap.read()
+    frame = cv2.flip(frame, 1)
+    im = np.copy(frame)
     wid = (frame.shape[1]-frame.shape[0])//2
     img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    d = d-1
-
+    d -= 1
+    o -= 1
     if(d < 0):
         faces = detect(img, model)
         d = 10
@@ -98,6 +107,12 @@ def face_detection(faces, d, cap):
         row = x*w
         col = y*w
         l = w*WINDOW_SIZE
+
+        if(o < 0):
+            user = compareFaces(im[row:row+l, col:col+l])[1]
+            print(user)
+            o = 10
+
         cv2.rectangle(frame, (col, row), (col+l, row+l), rectColor, stroke)
 
-    return faces, d, frame
+    return faces, frame, user, d, q, o

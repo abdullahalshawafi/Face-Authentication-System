@@ -33,13 +33,18 @@ def get_db_connection():
 def generate_frames(camera):
     faces = []
     d = 2
+    q = 0
+    o = 2
 
     while True:
         success, frame = camera.read()
         if not success:
             break
         else:
-            faces, d, frame = face_detection(faces, d, camera)
+            faces, frame, user, d, q, o = face_detection(
+                faces, camera, d, q, o)
+            if user:
+                print(user)
             ret, buffer = cv2.imencode(".jpg", frame)
             frame = buffer.tobytes()
 
@@ -72,7 +77,8 @@ def login():
 
         cur = get_db_connection().cursor()
         cur.execute(
-            "SELECT * FROM users WHERE email = ? AND password = ?", (email, password)
+            "SELECT * FROM users WHERE email = ? AND password = ?", (email,
+                                                                     password)
         )
         user = cur.fetchone()
 
@@ -117,10 +123,11 @@ def cartonize():
             originalImage = io.imread(
                 "./static/images/" + str(session["user"].get("image"))
             )
-            print(originalImage[:,:,0:3].shape)
-            cartonizedImage = cartoonize(originalImage[:,:,0:3])
+            print(originalImage[:, :, 0:3].shape)
+            cartonizedImage = cartoonize(originalImage[:, :, 0:3])
             io.imsave(
-                "./static/images/cartonized_" + str(session["user"].get("image")),
+                "./static/images/cartonized_" +
+                str(session["user"].get("image")),
                 cartonizedImage,
             )
             connection = get_db_connection()
