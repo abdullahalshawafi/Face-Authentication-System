@@ -110,7 +110,6 @@ def face_detection(faces, cap, d, q, o):
 
         if(o < 0):
             user = compareFaces(im[row:row+l, col:col+l])[1]
-            print(user)
             o = 10
 
         cv2.rectangle(frame, (col, row), (col+l, row+l), rectColor, stroke)

@@ -74,7 +74,7 @@ def compareFaces(image):
         dist = 0
         for j in range(0, len(megaHistogram[i][0])):
             dist += ecludianDistance(hists, megaHistogram[i][0][j])
-        dist = dist // 8
+        dist = dist // len(megaHistogram[i][0])
         distFromEachFace.append([dist, megaHistogram[i][1]])
         # print(dist)
     return min(distFromEachFace)

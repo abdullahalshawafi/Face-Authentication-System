@@ -15,12 +15,11 @@
             <div>
                 <form class="m-0 my-2" action="{{url_for('cartonize')}}" method="post">
                     {% if "cartonized_" in user.image %}
-                        <input type="submit" class="btn btn-success w-100" value="Un-Cartonize Profile Picture">
+                    <input type="submit" class="btn btn-success w-100" value="Un-Cartonize Profile Picture">
                     {% else %}
-                        <input type="submit" class="btn btn-success w-100" value="Cartonize Profile Picture">
+                    <input type="submit" class="btn btn-success w-100" value="Cartonize Profile Picture">
                     {% endif %}
                 </form>
-                <!-- <a class="btn btn-warning w-100" href="{{url_for('edit_profile')}}">Edit Profile</a> -->
             </div>
         </div>
     </div>

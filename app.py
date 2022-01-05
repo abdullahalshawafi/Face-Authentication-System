@@ -5,7 +5,7 @@ from sqlite3 import Error
 from face_detection.classifier import *
 from face_detection.face_detection import *
 from cartonize.cartonize import cartoonize
-from flask import Flask, render_template, request, redirect, session, Response
+from flask import Flask, render_template, request, redirect, session, jsonify
 
 
 app = Flask(__name__)
@@ -17,6 +17,13 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 
 DATABASE = "database.db"
+
+names_to_emails = {
+    "robert": "robertmounir66@gmail.com",
+    "bishoy": "bishoyatef313@gmail.com",
+    "abdullah": "abdullahadel.aam@gmail.com",
+    "w2am": "weaam.ali99@eng-st.cu.edu.eg"
+}
 
 
 def get_db_connection():
@@ -36,20 +43,34 @@ def generate_frames(camera):
     q = 0
     o = 2
 
+    old = ""
+    occurrences = 0
+    detected_user = None
+
     while True:
         success, frame = camera.read()
         if not success:
             break
         else:
-            faces, frame, username, d, q, o = face_detection(
+            faces, frame, name, d, q, o = face_detection(
                 faces, camera, d, q, o)
-            if username:
-                print(username)
-                return True, username
-            ret, buffer = cv2.imencode(".jpg", frame)
-            frame = buffer.tobytes()
+            if name:
+                if occurrences == 0:
+                    old = name
+                    occurrences += 1
+                elif name == old:
+                    occurrences += 1
+                else:
+                    old = ""
+                    occurrences = 0
+                print(occurrences)
+                print(old)
+                if occurrences == 3:
+                    detected_user = names_to_emails.get(name)
+                    print(detected_user)
+                    break
 
-        yield False, (b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
+    return detected_user
 
 
 @app.route("/")
@@ -57,6 +78,7 @@ def home():
     try:
         if session["user"]:
             return redirect("profile")
+        return redirect("login")
     except:
         return redirect("login")
 
@@ -64,21 +86,32 @@ def home():
 @app.route("/video")
 def video():
     camera = cv2.VideoCapture(0)
-    user_found, data = generate_frames(camera)
-    if user_found:
-        cur = get_db_connection().cursor()
-        cur.execute("SELECT * FROM users WHERE name = ?", (data))
-        user = cur.fetchone()
+    user = generate_frames(camera)
+    camera.release()
+    return user
 
+
+@app.route("/login-ajax", methods=["POST"])
+def login_ajax():
+    # POST Method
+    if request.method == "POST":
+        email = request.json["email"]
+
+        cur = get_db_connection().cursor()
+        cur.execute("SELECT * FROM users WHERE email = ?", (email,))
+        user = cur.fetchone()
         if user:
             session["user"] = {
                 "name": user[2],
                 "email": user[3],
                 "image": user[5],
             }
-            return redirect("profile")
-        return redirect("login")
-    return Response(data, mimetype="multipart/x-mixed-replace; boundary=frame")
+            resp = jsonify(success=True)
+            return resp
+
+        resp = jsonify(success=False)
+        resp.status_code = 404
+        return resp
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -94,7 +127,6 @@ def login():
                                                                      password)
         )
         user = cur.fetchone()
-
         if user:
             session["user"] = {
                 "name": user[2],
