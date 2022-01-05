@@ -41,14 +41,15 @@ def generate_frames(camera):
         if not success:
             break
         else:
-            faces, frame, user, d, q, o = face_detection(
+            faces, frame, username, d, q, o = face_detection(
                 faces, camera, d, q, o)
-            if user:
-                print(user)
+            if username:
+                print(username)
+                return True, username
             ret, buffer = cv2.imencode(".jpg", frame)
             frame = buffer.tobytes()
 
-        yield (b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
+        yield False, (b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
 
 
 @app.route("/")
@@ -63,9 +64,21 @@ def home():
 @app.route("/video")
 def video():
     camera = cv2.VideoCapture(0)
-    return Response(
-        generate_frames(camera), mimetype="multipart/x-mixed-replace; boundary=frame"
-    )
+    user_found, data = generate_frames(camera)
+    if user_found:
+        cur = get_db_connection().cursor()
+        cur.execute("SELECT * FROM users WHERE name = ?", (data))
+        user = cur.fetchone()
+
+        if user:
+            session["user"] = {
+                "name": user[2],
+                "email": user[3],
+                "image": user[5],
+            }
+            return redirect("profile")
+        return redirect("login")
+    return Response(data, mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -86,13 +99,15 @@ def login():
             session["user"] = {
                 "name": user[2],
                 "email": user[3],
-                "image": user[4],
+                "image": user[5],
             }
             return redirect("profile")
 
         return redirect("login")
 
     # GET Method
+    if (session["user"]):
+        return redirect('profile')
     return render_template("login.html", title="Login")
 
 

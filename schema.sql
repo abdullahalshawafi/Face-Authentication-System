@@ -8,6 +8,10 @@ CREATE TABLE users (
 		password TEXT NOT NULL,
 		image TEXT NOT NULL
 );
-
+-- .read schema.sql
 INSERT INTO users (name, email, password, image)
-values('Abdullah Adel', 'abdullahadel.aam@gmail.com', 'Abdullah123', 'abdullah.jpg');
+VALUES
+('Abdullah Adel', 'abdullahadel.aam@gmail.com', 'Abdullah123', 'abdullah.png'),
+('Weaam Bassem', 'weaam.ali99@eng-st.cu.edu.eg', 'Weaam123', 'weaam.jpeg'),
+('Robert Mounir', 'robertmounir66@gmail.com', 'Robert123', 'robert.jpeg'),
+('Bishoy Atef', 'bishoyatef313@gmail.com', 'Bishoy123', 'bishoy.jpeg');
