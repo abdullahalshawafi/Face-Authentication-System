@@ -138,9 +138,12 @@ def login():
         return redirect("login")
 
     # GET Method
-    if (session["user"]):
-        return redirect('profile')
-    return render_template("login.html", title="Login")
+    try:
+        if (session["user"]):
+            return redirect('profile')
+        return render_template("login.html", title="Login")
+    except :
+        return render_template("login.html", title="Login")
 
 
 @app.route("/logout")
@@ -170,8 +173,7 @@ def cartonize():
             originalImage = io.imread(
                 "./static/images/" + str(session["user"].get("image"))
             )
-            print(originalImage[:, :, 0:3].shape)
-            cartonizedImage = cartoonize(originalImage[:, :, 0:3])
+            cartonizedImage = cartoonize(originalImage)
             io.imsave(
                 "./static/images/cartonized_" +
                 str(session["user"].get("image")),
