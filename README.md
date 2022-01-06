@@ -39,3 +39,12 @@ Exit from sqlite3 using `Ctrl + C` then start app.py
 `$ python app.py`
 
 The app should be running locally at <http://127.0.0.1:5000/>
+
+
+# Explainer video
+
+https://user-images.githubusercontent.com/58189568/148336412-1657ae27-4763-4c5f-a236-24a6372f5af6.mp4
+
+
+
+
